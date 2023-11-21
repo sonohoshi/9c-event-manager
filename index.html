@@ -1,32 +1,50 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Markdown to Custom Format Converter</title>
+    <title>Markdown to JSON Converter</title>
     <style>
         pre {
-            white-space: pre-line;
             border: 1px solid #ccc;
             padding: 10px;
+            margin-top: 20px;
+            white-space: pre-wrap;
             user-select: all; 
         }
     </style>
 </head>
 <body>
-    <h1>Markdown to Custom Format Converter</h1>
-    <input type="file" id="fileInput">
-    <pre id="outputText"></pre>
-    <p>Select the above text and copy it using right click or keyboard shortcuts.</p>
+    <h1>Markdown to JSON Converter</h1>
+
+    <label for="headerInput">제목:</label>
+    <input type="text" id="headerInput" placeholder="제목 입력"><br><br>
+
+    <label for="dateInput">날짜:</label>
+    <input type="date" id="dateInput"><br><br>
+
+    <input type="file" id="fileInput"><br><br>
+
+    <button id="generateButton">JSON 생성</button>
+
+    <h2>JSON 결과</h2>
+    <pre id="outputJson"></pre>
 
     <script>
-        document.getElementById('fileInput').addEventListener('change', function(event) {
-            const file = event.target.files[0];
+        document.getElementById('generateButton').addEventListener('click', function() {
+            const header = document.getElementById('headerInput').value;
+            const date = new Date(document.getElementById('dateInput').value).toLocaleDateString('ko-KR').replace(/\. /g, '.');
+            const file = document.getElementById('fileInput').files[0];
+
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    const content = e.target.result;
-                    // Replace actual newlines with \n for display
-                    const displayContent = content.replace(/\n/g, '\\n');
-                    document.getElementById('outputText').textContent = displayContent;
+                    // Replace \r\n with \n, then replace \n with \\n for JSON format
+                    const content = e.target.result.replace(/\r\n/g, '\n');
+                    const jsonOutput = {
+                        Header: header,
+                        Date: date,
+                        Contents: content
+                    };
+                    document.getElementById('outputJson').textContent = JSON.stringify(jsonOutput, null, 4);
                 };
                 reader.readAsText(file);
             }
