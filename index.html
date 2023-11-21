@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Markdown to Custom Format Converter</title>
+    <style>
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;       /* Internet Explorer 5.5+ */
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Markdown to Custom Format Converter</h1>
+    <input type="file" id="fileInput">
+    <pre id="outputText"></pre>
+
+    <script>
+        document.getElementById('fileInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const content = e.target.result;
+                    const converted = convertToCustomFormat(content);
+                    document.getElementById('outputText').textContent = converted;
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        function convertToCustomFormat(markdownText) {
+            let lines = markdownText.split('\n');
+            return lines.map(line => {
+                // Convert headers
+                if (line.startsWith('# ')) {
+                    line = '<size=200%>' + line.slice(2) + '</size>';
+                } else if (line.startsWith('## ')) {
+                    line = '<size=150%>' + line.slice(3) + '</size>';
+                }
+
+                // Convert bold text
+                line = line.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+
+                // Replace newlines with \n
+                return line + '\\n';
+            }).join('');
+        }
+    </script>
+</body>
+</html>
