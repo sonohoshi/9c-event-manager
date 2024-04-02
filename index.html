@@ -43,10 +43,10 @@
         <input type="checkbox" id="useDateTime"><br><br>
 
         <label for="beginDateTimeInput">Begin Date and Time:</label>
-        <input type="datetime-local" id="beginDateTimeInput" step="1"><br><br>
+        <input type="datetime-local" id="beginDateTimeInput"><br><br>
 
         <label for="endDateTimeInput">End Date and Time:</label>
-        <input type="datetime-local" id="endDateTimeInput" step="1"><br><br>
+        <input type="datetime-local" id="endDateTimeInput"><br><br>
 
         <label for="urlInput">URL:</label>
         <input type="text" id="urlInput" placeholder="URL"><br><br>
@@ -94,8 +94,8 @@
             const bannerImageName = document.getElementById('bannerImageInput').files[0]?.name.split('.')[0];
             const popupImageName = document.getElementById('popupImageInput').files[0]?.name.split('.')[0];
             const useDateTime = document.getElementById('useDateTime').checked;
-            const beginDateTime = useDateTime ? document.getElementById('beginDateTimeInput').value : '';
-            const endDateTime = useDateTime ? document.getElementById('endDateTimeInput').value : '';
+            const beginDateTime = useDateTime ? document.getElementById('beginDateTimeInput').value + ':00' : '';
+            const endDateTime = useDateTime ? document.getElementById('endDateTimeInput').value + ':00' : '';
             const url = document.getElementById('urlInput').value;
             const useAgentAddress = document.getElementById('useAgentAddress').checked;
             const description = document.getElementById('descriptionInput').value;
