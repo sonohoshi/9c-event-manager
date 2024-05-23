@@ -6,9 +6,13 @@
         .content {
             margin-top: 20px;
         }
+        .pretty-box {
+            padding: 10px;
+            border: 5px solid #000000;
+        }
         pre {
             white-space: pre-line;
-            border: 1px solid #ccc;
+            border: 1px solid #ff0000;
             padding: 10px;
             user-select: all;
         }
@@ -22,7 +26,6 @@
 
     <button onclick="toggleSection('markdownSection')">Markdown Converter</button>
     <button onclick="toggleSection('eventSection')">Event JSON Generator</button>
-    <button onclick="toggleSection('eventToolSection')">Event JSON Modifier</button>
 
     <div id="markdownSection" class="content hidden">
         <input type="file" id="fileInput">
@@ -31,42 +34,43 @@
     </div>
 
     <div id="eventSection" class="content hidden">
-        <label for="priorityInput">Priority:</label>
-        <input type="number" id="priorityInput" placeholder="우선순위"><br><br>
+        <button id="getJson">현재 데이터 가져오기</button>
+        <button id="printJson">현재 데이터 출력하기</button>
+        <br>
 
-        <label for="bannerImageInput">Banner Image Name:</label>
-        <input type="file" id="bannerImageInput" accept="image/*"><br><br>
+        <div class="pretty-box">
+            <label for="priorityInput">Priority:</label>
+            <input type="number" id="priorityInput" placeholder="우선순위"><br><br>
 
-        <label for="popupImageInput">Popup Image Name:</label>
-        <input type="file" id="popupImageInput" accept="image/*"><br><br>
+            <label for="bannerImageInput">Banner Image Name:</label>
+            <input type="file" id="bannerImageInput" accept="image/*"><br><br>
 
-        <label for="useDateTime">Use Date and Time:</label>
-        <input type="checkbox" id="useDateTime"><br><br>
+            <label for="popupImageInput">Popup Image Name:</label>
+            <input type="file" id="popupImageInput" accept="image/*"><br><br>
 
-        <label for="beginDateTimeInput">Begin Date and Time:</label>
-        <input type="datetime-local" id="beginDateTimeInput"><br><br>
+            <label for="useDateTime">Use Date and Time:</label>
+            <input type="checkbox" id="useDateTime"><br><br>
 
-        <label for="endDateTimeInput">End Date and Time:</label>
-        <input type="datetime-local" id="endDateTimeInput"><br><br>
+            <label for="beginDateTimeInput">Begin Date and Time:</label>
+            <input type="datetime-local" id="beginDateTimeInput"><br><br>
 
-        <label for="urlInput">URL:</label>
-        <input type="text" id="urlInput" placeholder="URL"><br><br>
+            <label for="endDateTimeInput">End Date and Time:</label>
+            <input type="datetime-local" id="endDateTimeInput"><br><br>
 
-        <label for="useAgentAddress">Use Agent Address:</label>
-        <input type="checkbox" id="useAgentAddress"><br><br>
+            <label for="urlInput">URL:</label>
+            <input type="text" id="urlInput" placeholder="URL"><br><br>
 
-        <label for="descriptionInput">Description:</label>
-        <input type="text" id="descriptionInput" placeholder="설명"><br><br>
+            <label for="useAgentAddress">Use Agent Address:</label>
+            <input type="checkbox" id="useAgentAddress"><br><br>
 
-        <button id="generateButton">JSON 생성</button>
+            <label for="descriptionInput">Description:</label>
+            <input type="text" id="descriptionInput" placeholder="설명"><br><br>
+
+            <button id="generateButton">JSON 생성</button>
+        </div>
 
         <h2>JSON 결과</h2>
         <pre id="outputJson"></pre>
-    </div>
-
-    <div id="eventToolSection" class="content hidden">
-        <button id="getJson">현재 데이터 가져오기</button>
-        <button id="printJson">현재 데이터 출력하기</button>
     </div>
 
     <script>
@@ -119,6 +123,8 @@
             };
 
             document.getElementById('outputJson').textContent = JSON.stringify(jsonOutput, null, 4);
+            runtimeList.push(jsonOutput)
+            renderTable(runtimeList)
         });
 
         // Event JSON Modifier
@@ -136,6 +142,35 @@
             tableElement = tbl
             tbl.id = "tableElement"
             const tblBody = document.createElement("tbody");
+            var firstRow = document.createElement("tr");
+            var tdElement = document.createElement("td")
+            tdElement.appendChild(document.createTextNode("삭제 버튼"))
+            firstRow.appendChild(tdElement)
+            tdElement = document.createElement("td")
+            tdElement.appendChild(document.createTextNode("배너 파일 이름"))
+            firstRow.appendChild(tdElement)
+            tdElement = document.createElement("td")
+            tdElement.appendChild(document.createTextNode("팝업 파일 이름"))
+            firstRow.appendChild(tdElement)
+            tdElement = document.createElement("td")
+            tdElement.appendChild(document.createTextNode("배너 이미지"))
+            firstRow.appendChild(tdElement)
+            tdElement = document.createElement("td")
+            tdElement.appendChild(document.createTextNode("팝업 이미지"))
+            firstRow.appendChild(tdElement)
+            tdElement = document.createElement("td")
+            tdElement.appendChild(document.createTextNode("이벤트 시작 날짜"))
+            firstRow.appendChild(tdElement)
+            tdElement = document.createElement("td")
+            tdElement.appendChild(document.createTextNode("이벤트 종료 날짜"))
+            firstRow.appendChild(tdElement)
+            tdElement = document.createElement("td")
+            tdElement.appendChild(document.createTextNode("이벤트 url"))
+            firstRow.appendChild(tdElement)
+            tdElement = document.createElement("td")
+            tdElement.appendChild(document.createTextNode("이벤트 설명"))
+            firstRow.appendChild(tdElement)
+            tblBody.appendChild(firstRow)
 
             serializedList.sort((a,b) => a.Priority - b.Priority);
             // creating all cells
@@ -163,13 +198,13 @@
 
                 const bannerTd = document.createElement("td")
                 const banner = document.createElement("img")
-                banner.src = `https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Images/Banner/${s.BannerImageName}.png`
+                banner.src = `${document.getElementById('bannerImageInput').files[0]?.name.split(".")[0] == s.BannerImageName ? URL.createObjectURL(document.getElementById('bannerImageInput').files[0]) : `https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Images/Banner/${s.BannerImageName}.png`}`
                 bannerTd.appendChild(banner)
                 row.appendChild(bannerTd);
 
                 const popupTd = document.createElement("td")
                 const popup = document.createElement("img")
-                popup.src = `https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Images/Notice/${s.PopupImageName}.png`
+                popup.src = `${document.getElementById('popupImageInput').files[0]?.name.split(".")[0] == s.PopupImageName ? URL.createObjectURL(document.getElementById('bannerImageInput').files[0]) : `https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Images/Notice/${s.PopupImageName}.png`}`
                 popup.width = 300
                 popup.height = 210
                 popupTd.appendChild(popup)
