@@ -25,7 +25,7 @@
     <h1>Document and Event JSON Generator</h1>
 
     <button onclick="toggleSection('markdownSection')">Markdown Converter</button>
-    <button onclick="toggleSection('eventSection')">Event JSON Generator</button>
+    <button onclick="toggleSection('eventSection')">인게임 공지 데이터 관리</button>
 
     <div id="markdownSection" class="content hidden">
         <input type="file" id="fileInput">
@@ -39,34 +39,34 @@
         <br>
 
         <div class="pretty-box">
-            <label for="priorityInput">Priority:</label>
+            <label for="priorityInput">우선순위(작을수록 앞에 옵니다):</label>
             <input type="number" id="priorityInput" placeholder="우선순위"><br><br>
 
-            <label for="bannerImageInput">Banner Image Name:</label>
+            <label for="bannerImageInput">배너 이미지 파일(223*68):</label>
             <input type="file" id="bannerImageInput" accept="image/*"><br><br>
 
-            <label for="popupImageInput">Popup Image Name:</label>
+            <label for="popupImageInput">팝업 이미지 파일(600*420):</label>
             <input type="file" id="popupImageInput" accept="image/*"><br><br>
 
-            <label for="useDateTime">Use Date and Time:</label>
+            <label for="useDateTime">기간제 이벤트 여부:</label>
             <input type="checkbox" id="useDateTime"><br><br>
 
-            <label for="beginDateTimeInput">Begin Date and Time:</label>
+            <label for="beginDateTimeInput">이벤트 시작 날짜:</label>
             <input type="datetime-local" id="beginDateTimeInput"><br><br>
 
-            <label for="endDateTimeInput">End Date and Time:</label>
+            <label for="endDateTimeInput">이벤트 종료 날짜:</label>
             <input type="datetime-local" id="endDateTimeInput"><br><br>
 
             <label for="urlInput">URL:</label>
             <input type="text" id="urlInput" placeholder="URL"><br><br>
 
-            <label for="useAgentAddress">Use Agent Address:</label>
+            <label for="useAgentAddress">유저 정보(Address) 사용 여부:</label>
             <input type="checkbox" id="useAgentAddress"><br><br>
 
-            <label for="descriptionInput">Description:</label>
+            <label for="descriptionInput">설명(관리할때 사용하는 값으로 유저에겐 안보입니다. 영어로 적어주세요):</label>
             <input type="text" id="descriptionInput" placeholder="설명"><br><br>
 
-            <button id="generateButton">JSON 생성</button>
+            <button id="generateButton">위 정보를 통해 이벤트 안내 데이터 추가</button>
         </div>
 
         <h2>JSON 결과</h2>
@@ -99,7 +99,7 @@
 
         // Event JSON Generator
         // ... (Event JSON Generator JavaScript 코드를 여기에 추가) ...
-        document.getElementById('generateButton').addEventListener('click', function() {
+        function inputToRenderTable(){
             const priority = parseInt(document.getElementById('priorityInput').value);
             const bannerImageName = document.getElementById('bannerImageInput').files[0]?.name.split('.')[0];
             const popupImageName = document.getElementById('popupImageInput').files[0]?.name.split('.')[0];
@@ -122,10 +122,14 @@
                 Description: description
             };
 
-            document.getElementById('outputJson').textContent = JSON.stringify(jsonOutput, null, 4);
+            var realJson = new Object()
+            realJson.Banners = runtimeList
+            document.getElementById('outputJson').textContent = JSON.stringify(realJson, null, 0);
             runtimeList.push(jsonOutput)
             renderTable(runtimeList)
-        });
+        }
+
+        document.getElementById('generateButton').addEventListener('click', inputToRenderTable);
 
         // Event JSON Modifier
         // ... (Event JSON Modifier JavaScript 코드를 여기에 추가) ...
