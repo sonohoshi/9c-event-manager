@@ -38,10 +38,6 @@ function inputToRenderTable() {
         UseAgentAddress: useAgentAddress,
         Description: description
     };
-
-    var realJson = new Object()
-    realJson.Banners = runtimeList
-    document.getElementById('outputJson').textContent = JSON.stringify(realJson, null, 0);
     runtimeList.push(jsonOutput)
     renderTable(runtimeList)
 }
@@ -155,6 +151,9 @@ function renderTable(serializedList) {
 
     // appends <table> into <body>
     document.body.appendChild(tbl);
+    const realJson = new Object()
+    realJson.Banners = serializedList
+    document.getElementById('outputJson').textContent = JSON.stringify(realJson, null, 0);
 }
 
 async function getJsonAndRender(){
@@ -165,14 +164,6 @@ async function getJsonAndRender(){
     const json = await response.json();
     await renderTable(json.Banners)
     runtimeList.forEach(s => console.log(s))
-}
-
-function printJson(){
-    if (runtimeList.length > 0) {
-        const jsonList = new Object()
-        jsonList.Banners = runtimeList
-        console.log(JSON.stringify(jsonList, null, 4))
-    }
 }
 
 async function gitCommitAndPush() {
@@ -199,6 +190,8 @@ async function gitCommitAndPush() {
 }
 
 document.getElementById('getJson').addEventListener('click', getJsonAndRender);
-document.getElementById('printJson').addEventListener('click', printJson);
-document.getElementById('generateButton').addEventListener('click', inputToRenderTable);
+document.getElementById('inputForm').addEventListener('submit', function(event){
+    inputToRenderTable();
+    event.preventDefault();
+});
 document.getElementById('commitButton').addEventListener('click', gitCommitAndPush);
