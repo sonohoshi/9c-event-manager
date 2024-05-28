@@ -21,11 +21,25 @@
         }
     </style>
 </head>
+<script>
+    function toggleSection(sectionId) {
+        // Hide all sections
+        document.querySelectorAll('.content').forEach(section => {
+            section.classList.add('hidden');
+        });
+
+        // Show the selected section
+        document.getElementById(sectionId).classList.remove('hidden');
+    }
+</script>
 <body>
     <h1>Document and Event JSON Generator</h1>
 
     <button onclick="toggleSection('markdownSection')">Markdown Converter</button>
     <button onclick="toggleSection('eventSection')">인게임 공지 데이터 관리</button>
+
+    <br><label for="githubToken">github token(1password에 있을것):</label>
+    <input type="text" id="githubToken" placeholder="github token"><br><br>
 
     <div id="markdownSection" class="content hidden">
         <input type="file" id="fileInput">
@@ -71,8 +85,8 @@
 
         <h2>JSON 결과</h2>
         <pre id="outputJson"></pre>
+        <button id="commitButton">딸깍으로 git에 올려보기</button>
     </div>
-
-    <script type="text/javascript" src="script.js"></script>
 </body>
+<script type="module" src="./script.js"></script>
 </html>

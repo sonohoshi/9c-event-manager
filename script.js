@@ -1,12 +1,5 @@
-function toggleSection(sectionId) {
-    // Hide all sections
-    document.querySelectorAll('.content').forEach(section => {
-        section.classList.add('hidden');
-    });
-
-    // Show the selected section
-    document.getElementById(sectionId).classList.remove('hidden');
-}
+import { Octokit } from "https://esm.sh/@octokit/rest";
+import { Base64 } from 'https://cdn.jsdelivr.net/npm/js-base64@3.7.7/base64.mjs';
 
 // Markdown Converter
 document.getElementById('fileInput').addEventListener('change', function (event) {
@@ -52,8 +45,6 @@ function inputToRenderTable() {
     runtimeList.push(jsonOutput)
     renderTable(runtimeList)
 }
-
-document.getElementById('generateButton').addEventListener('click', inputToRenderTable);
 
 // Event JSON Modifier
 // ... (Event JSON Modifier JavaScript 코드를 여기에 추가) ...
@@ -166,7 +157,7 @@ function renderTable(serializedList) {
     document.body.appendChild(tbl);
 }
 
-document.getElementById('getJson').addEventListener('click', async function () {
+async function getJsonAndRender(){
     const response = await fetch('https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Json/Event.json',
         {
             method: 'GET',
@@ -174,11 +165,40 @@ document.getElementById('getJson').addEventListener('click', async function () {
     const json = await response.json();
     await renderTable(json.Banners)
     runtimeList.forEach(s => console.log(s))
-});
-document.getElementById('printJson').addEventListener('click', function () {
+}
+
+function printJson(){
     if (runtimeList.length > 0) {
         const jsonList = new Object()
         jsonList.Banners = runtimeList
         console.log(JSON.stringify(jsonList, null, 4))
     }
-});
+}
+
+async function gitCommitAndPush() {
+    const inputToken = document.getElementById('githubToken').value
+    if (inputToken == "") {
+        alert("토큰없음")
+        return 500;
+    }
+
+    const path = `Assets/Json/Event-test.json`
+    const octokit = new Octokit({
+        auth: document.getElementById('githubToken').value
+    })
+    const result = await octokit.repos.createOrUpdateFileContents({
+        owner: "planetarium",
+        repo: "NineChronicles.LiveAssets",
+        path,
+        message: `commit test"`,
+        content: Base64.encode(document.getElementById('outputJson').textContent),
+        
+    })
+
+    return result?.status || 500
+}
+
+document.getElementById('getJson').addEventListener('click', getJsonAndRender);
+document.getElementById('printJson').addEventListener('click', printJson);
+document.getElementById('generateButton').addEventListener('click', inputToRenderTable);
+document.getElementById('commitButton').addEventListener('click', gitCommitAndPush);
