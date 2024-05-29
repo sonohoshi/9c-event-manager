@@ -167,26 +167,34 @@ async function getJsonAndRender(){
 }
 
 async function gitCommitAndPush() {
-    const inputToken = document.getElementById('githubToken').value
-    if (inputToken == "") {
-        alert("토큰없음")
-        return 500;
+    if (typeof browser === "undefined") {
+        var browser = chrome;
     }
+
+    const inputToken = document.getElementById('githubToken').value
 
     const path = `Assets/Json/Event-test.json`
     const octokit = new Octokit({
-        auth: document.getElementById('githubToken').value
+        auth: inputToken
     })
-    const result = await octokit.repos.createOrUpdateFileContents({
-        owner: "planetarium",
-        repo: "NineChronicles.LiveAssets",
-        path,
-        message: `commit test"`,
-        content: Base64.encode(document.getElementById('outputJson').textContent),
-        
-    })
+    await octokit.request("/user")
+        .then(_ => {
+            const content = document.getElementById('outputJson').textContent;
+            if(content == ""){
+                throw "noJson"
+            }
 
-    return result?.status || 500
+            return content
+        })
+        .then(content => octokit.repos.createOrUpdateFileContents({
+            owner: "planetarium",
+            repo: "NineChronicles.LiveAssets",
+            path,
+            message: `commit test"`,
+            content: Base64.encode(content),
+        }))
+        .then(res => alert(res?.status))
+        .catch(err => alert(`뭔가잘못됨, ${err}`))
 }
 
 document.getElementById('getJson').addEventListener('click', getJsonAndRender);
@@ -194,4 +202,7 @@ document.getElementById('inputForm').addEventListener('submit', function(event){
     inputToRenderTable();
     event.preventDefault();
 });
-document.getElementById('commitButton').addEventListener('click', gitCommitAndPush);
+document.getElementById('gitForm').addEventListener('submit', function(event){
+    gitCommitAndPush();
+    event.preventDefault();
+});

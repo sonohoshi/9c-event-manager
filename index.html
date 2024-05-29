@@ -38,9 +38,6 @@
     <button onclick="toggleSection('markdownSection')">Markdown Converter</button>
     <button onclick="toggleSection('eventSection')">인게임 공지 데이터 관리</button>
 
-    <br><label for="githubToken">github token(1password에 있을것):</label>
-    <input type="password" id="githubToken" placeholder="github token" autocomplete="current-password"><br>
-
     <div id="markdownSection" class="content hidden">
         <input type="file" id="fileInput">
         <pre id="outputText"></pre>
@@ -56,10 +53,10 @@
             <input type="number" id="priorityInput" placeholder="우선순위" value="0" required><br><br>
 
             <label for="bannerImageInput">배너 이미지 파일(223*68):</label>
-            <input type="file" id="bannerImageInput" accept="image/*" required><br><br>
+            <input type="file" id="bannerImageInput" accept="image/png" required><br><br>
 
             <label for="popupImageInput">팝업 이미지 파일(600*420):</label>
-            <input type="file" id="popupImageInput" accept="image/*" required><br><br>
+            <input type="file" id="popupImageInput" accept="image/png" required><br><br>
 
             <label for="useDateTime">기간제 이벤트 여부:</label>
             <input type="checkbox" id="useDateTime"><br><br>
@@ -71,7 +68,7 @@
             <input type="datetime-local" id="endDateTimeInput"><br><br>
 
             <label for="urlInput">URL:</label>
-            <input type="text" id="urlInput" placeholder="URL" required><br><br>
+            <input type="url" id="urlInput" placeholder="URL" required><br><br>
 
             <label for="useAgentAddress">유저 정보(Address) 사용 여부:</label>
             <input type="checkbox" id="useAgentAddress"><br><br>
@@ -80,11 +77,17 @@
             <input type="text" id="descriptionInput" placeholder="설명" required><br><br>
 
             <button type="submit" id="generateButton">위 정보를 통해 이벤트 안내 데이터 추가</button>
+            <button type="reset">입력값 초기화</button>
         </form>
 
         <h2>JSON 결과</h2>
         <pre id="outputJson"></pre>
-        <button id="commitButton">딸깍으로 git에 올려보기</button>
+
+        <form id="gitForm">
+            <label for="githubToken">github token(1password에 있을것):</label>
+            <input type="password" id="githubToken" placeholder="github token" autocomplete="current-password" required>
+            <button type="submit" id="commitButton">딸깍으로 git에 올려보기</button>
+        </form>
     </div>
 </body>
 <script type="module" src="./script.js"></script>
