@@ -166,14 +166,27 @@ async function getJsonAndRender(){
     runtimeList.forEach(s => console.log(s))
 }
 
+async function getSHA(octokit, path) {
+    const result = await octokit.repos.getContent({
+        owner: "planetarium",
+        repo: "NineChronicles.LiveAssets",
+        path,
+    })
+
+    const sha = result?.data?.sha
+
+    return sha
+}
+
 async function gitCommitAndPush() {
     if (typeof browser === "undefined") {
+
         var browser = chrome;
     }
 
     const inputToken = document.getElementById('githubToken').value
 
-    const path = `Assets/Json/Event-test.json`
+    const path = `Assets/Json/Event.json`
     const octokit = new Octokit({
         auth: inputToken
     })
@@ -186,14 +199,18 @@ async function gitCommitAndPush() {
 
             return content
         })
-        .then(content => octokit.repos.createOrUpdateFileContents({
-            owner: "planetarium",
-            repo: "NineChronicles.LiveAssets",
-            path,
-            message: `commit test"`,
-            content: Base64.encode(content),
-        }))
-        .then(res => alert(res?.status))
+        .then(async content => {
+            const sha = await getSHA(octokit, path)
+            return await octokit.repos.createOrUpdateFileContents({
+                owner: "planetarium",
+                repo: "NineChronicles.LiveAssets",
+                path,
+                message: `update Event.json"`,
+                content: Base64.encode(content),
+                sha
+            })
+        })
+        .then(res => alert(res?.status == 200 ? "업로드 되었습니다." : res?.status))
         .catch(err => alert(`뭔가잘못됨, ${err}`))
 }
 
