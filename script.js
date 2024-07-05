@@ -1,5 +1,4 @@
 import { Octokit } from "https://esm.sh/@octokit/rest";
-import { Base64 } from 'https://cdn.jsdelivr.net/npm/js-base64@3.7.7/base64.mjs';
 
 // Markdown Converter
 document.getElementById('fileInput').addEventListener('change', function (event) {
@@ -83,6 +82,9 @@ function renderTable(serializedList) {
     tdElement.appendChild(document.createTextNode("삭제 버튼"))
     firstRow.appendChild(tdElement)
     tdElement = document.createElement("td")
+    tdElement.appendChild(document.createTextNode("우선순위"))
+    firstRow.appendChild(tdElement)
+    tdElement = document.createElement("td")
     tdElement.appendChild(document.createTextNode("배너 파일 이름"))
     firstRow.appendChild(tdElement)
     tdElement = document.createElement("td")
@@ -123,6 +125,10 @@ function renderTable(serializedList) {
         }
         buttonTd.appendChild(removeButton)
         row.appendChild(buttonTd);
+
+        const priorityTd = document.createElement("td")
+        priorityTd.appendChild(document.createTextNode(`${s.Priority}`))
+        row.appendChild(priorityTd);
 
         const bannerNameTd = document.createElement("td")
         bannerNameTd.appendChild(document.createTextNode(`${s.BannerImageName}`))
@@ -183,20 +189,9 @@ async function getJsonAndRender(){
             method: 'GET',
         });
     const json = await response.json();
-    await renderTable(json.Banners)
+    renderTable(json.Banners)
+    addImages = Array();
     runtimeList.forEach(s => console.log(s))
-}
-
-async function getSHA(octokit, path) {
-    const result = await octokit.repos.getContent({
-        owner: "planetarium",
-        repo: "NineChronicles.LiveAssets",
-        path,
-    })
-
-    const sha = result?.data?.sha
-
-    return sha
 }
 
 async function makeTreeAndPush(octokit, files){
@@ -206,14 +201,13 @@ async function makeTreeAndPush(octokit, files){
     response = await octokit.repos.listCommits({
         owner,
         repo,
-        sha: "test-branch",
+        sha: "main",
         per_page: 1
     })
     let latestCommitSha = response.data[0].sha
 
     const ImageBlobs = new Object()
     for (const image of addImages){
-        // files[data.path] = data.file
         const { data: { sha: newBlobHash } } = await octokit.git.createBlob({
             owner, repo, content: image.file, encoding: "base64"
         });
@@ -252,7 +246,7 @@ async function makeTreeAndPush(octokit, files){
         owner,
         repo,
         sha: latestCommitSha,
-        ref: `heads/test-branch`,
+        ref: `heads/main`,
         force: true
     })
 }
@@ -271,7 +265,7 @@ async function gitCommitAndPush() {
         .then(_ => {
             const content = document.getElementById('outputJson').textContent;
             if(content == ""){
-                throw "noJson"
+                throw "업로드 할 데이터가 없습니다"
             }
 
             return content

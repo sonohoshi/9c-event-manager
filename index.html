@@ -45,9 +45,10 @@
     </div>
 
     <div id="eventSection" class="content hidden">
-        <button id="getJson">현재 데이터 가져오기</button>
+        <button id="getJson">현재 데이터 가져오기(제일 먼저 눌러주세요)</button>
         <br>
 
+        <h2>새로 추가할 이벤트 데이터 입력 ⬇</h2>
         <form class="pretty-box" id="inputForm">
             <label for="priorityInput">우선순위(작을수록 앞에 옵니다):</label>
             <input type="number" id="priorityInput" placeholder="우선순위" value="0" required><br><br>
@@ -73,7 +74,7 @@
             <label for="useAgentAddress">유저 정보(Address) 사용 여부:</label>
             <input type="checkbox" id="useAgentAddress"><br><br>
 
-            <label for="descriptionInput">설명(관리할때 사용하는 값으로 유저에겐 안보입니다. 영어로 적어주세요):</label>
+            <label for="descriptionInput">설명(관리할때 사용하는 값으로 유저에겐 안보입니다. 공백 없이 영어로 적어주세요):</label>
             <input type="text" id="descriptionInput" placeholder="설명" required><br><br>
 
             <button type="submit" id="generateButton">위 정보를 통해 이벤트 안내 데이터 추가</button>
@@ -83,10 +84,11 @@
         <h2>JSON 결과</h2>
         <pre id="outputJson"></pre>
 
-        <form id="gitForm">
-            <label for="githubToken">github token(1password에 있을것):</label>
+        <form class="pretty-box" id="gitForm">
+            <h2>수정이 끝났다면 여기서</h2>
+            <label for="githubToken">github token(1password 참고):</label>
             <input type="password" id="githubToken" placeholder="github token" autocomplete="current-password" required>
-            <button type="submit" id="commitButton">딸깍으로 git에 올려보기</button>
+            <button type="submit" id="commitButton">업로드(반응이없어도제발한번만눌러주세요)</button>
         </form>
     </div>
 </body>
