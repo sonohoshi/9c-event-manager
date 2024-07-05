@@ -180,7 +180,7 @@ function renderTable(serializedList) {
     document.body.appendChild(tbl);
     const realJson = new Object()
     realJson.Banners = serializedList
-    document.getElementById('outputJson').textContent = JSON.stringify(realJson, null, 0);
+    document.getElementById('outputJson').textContent = JSON.stringify(realJson, null, 4);
 }
 
 async function getJsonAndRender(){
