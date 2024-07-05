@@ -36,15 +36,36 @@ function inputToRenderTable() {
         EndDateTime: endDateTime,
         Url: url,
         UseAgentAddress: useAgentAddress,
-        Description: description
+        Description: description,
+        EnableKeys: []
     };
     runtimeList.push(jsonOutput)
+
+    const bannerImage = document.getElementById('bannerImageInput').files[0]
+    const bannerReader = new FileReader()
+    bannerReader.readAsDataURL(bannerImage)
+    bannerReader.onload = () => {
+        const res = bannerReader.result.replace(`data:image/png;base64,`,'')
+        addImages.push({path: `Assets/Images/Banner/${bannerImageName}.png`, file: res})
+        addImages.push({path: `Assets/Images/Banner/${bannerImageName}_KR.png`, file: res})
+        addImages.push({path: `Assets/Images/Banner/${bannerImageName}_JP.png`, file: res})    
+    }
+    const popupImage = document.getElementById('popupImageInput').files[0]
+    const popupReader = new FileReader()
+    popupReader.readAsDataURL(popupImage)
+    popupReader.onload = () => {
+        const res = popupReader.result.replace(`data:image/png;base64,`,'')
+        addImages.push({path: `Assets/Images/Notice/${popupImageName}.png`, file: res})
+        addImages.push({path: `Assets/Images/Notice/${popupImageName}_KR.png`, file: res})
+        addImages.push({path: `Assets/Images/Notice/${popupImageName}_JP.png`, file: res})    
+    }
     renderTable(runtimeList)
 }
 
 // Event JSON Modifier
 // ... (Event JSON Modifier JavaScript 코드를 여기에 추가) ...
 var runtimeList = Array();
+var addImages = Array();
 var tableElement;
 function renderTable(serializedList) {
     runtimeList = serializedList
@@ -178,15 +199,71 @@ async function getSHA(octokit, path) {
     return sha
 }
 
+async function makeTreeAndPush(octokit, files){
+    const owner = "planetarium"
+    const repo = "NineChronicles.LiveAssets"
+    let response;
+    response = await octokit.repos.listCommits({
+        owner,
+        repo,
+        sha: "test-branch",
+        per_page: 1
+    })
+    let latestCommitSha = response.data[0].sha
+
+    const ImageBlobs = new Object()
+    for (const image of addImages){
+        // files[data.path] = data.file
+        const { data: { sha: newBlobHash } } = await octokit.git.createBlob({
+            owner, repo, content: image.file, encoding: "base64"
+        });
+        ImageBlobs[image.path] = newBlobHash;
+        console.log(newBlobHash);
+    }
+    const changes = { files: ImageBlobs }
+    console.log(changes)
+    const newTree = Object.keys(changes.files).map(path => {
+        const mode = "100644"
+        return {
+          path,
+          mode,
+          sha: changes.files[path]
+        }
+      })
+    console.log(newTree)
+    newTree.push({path: "Assets/Json/Event.json", mode: "100644", content: files["Assets/Json/Event.json"]})
+    response = await octokit.git.createTree({
+        owner,
+        repo,
+        base_tree: latestCommitSha,
+        tree: newTree
+    })
+    const newTreeSha = response.data.sha
+
+    response = await octokit.git.createCommit({
+        owner,
+        repo,
+        message: "update event data",
+        tree: newTreeSha,
+        parents: [latestCommitSha]
+    })
+    latestCommitSha = response.data.sha
+    return await octokit.git.updateRef({
+        owner,
+        repo,
+        sha: latestCommitSha,
+        ref: `heads/test-branch`,
+        force: true
+    })
+}
+
 async function gitCommitAndPush() {
     if (typeof browser === "undefined") {
-
         var browser = chrome;
     }
 
     const inputToken = document.getElementById('githubToken').value
 
-    const path = `Assets/Json/Event.json`
     const octokit = new Octokit({
         auth: inputToken
     })
@@ -200,15 +277,9 @@ async function gitCommitAndPush() {
             return content
         })
         .then(async content => {
-            const sha = await getSHA(octokit, path)
-            return await octokit.repos.createOrUpdateFileContents({
-                owner: "planetarium",
-                repo: "NineChronicles.LiveAssets",
-                path,
-                message: `update Event.json"`,
-                content: Base64.encode(content),
-                sha
-            })
+            const preparedJson = new Object()
+            preparedJson["Assets/Json/Event.json"] = content
+            return await makeTreeAndPush(octokit, preparedJson)
         })
         .then(res => alert(res?.status == 200 ? "업로드 되었습니다." : res?.status))
         .catch(err => alert(`뭔가잘못됨, ${err}`))
