@@ -146,7 +146,7 @@ function renderTable(serializedList) {
 
         const popupTd = document.createElement("td")
         const popup = document.createElement("img")
-        popup.src = `${document.getElementById('popupImageInput').files[0]?.name.split(".")[0] == s.PopupImageName ? URL.createObjectURL(document.getElementById('bannerImageInput').files[0]) : `https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Images/Notice/${s.PopupImageName}.png`}`
+        popup.src = `${document.getElementById('popupImageInput').files[0]?.name.split(".")[0] == s.PopupImageName ? URL.createObjectURL(document.getElementById('popupImageInput').files[0]) : `https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Images/Notice/${s.PopupImageName}.png`}`
         popup.width = 300
         popup.height = 210
         popupTd.appendChild(popup)
