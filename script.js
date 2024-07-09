@@ -25,6 +25,7 @@ function inputToRenderTable() {
     const url = document.getElementById('urlInput').value;
     const useAgentAddress = document.getElementById('useAgentAddress').checked;
     const description = document.getElementById('descriptionInput').value;
+    const enableKeys = document.getElementById('enableKeyInput').value.split(",");
 
     const jsonOutput = {
         Priority: priority,
@@ -36,7 +37,7 @@ function inputToRenderTable() {
         Url: url,
         UseAgentAddress: useAgentAddress,
         Description: description,
-        EnableKeys: []
+        EnableKeys: enableKeys
     };
     runtimeList.push(jsonOutput)
 
@@ -109,6 +110,10 @@ function renderTable(serializedList) {
     tdElement.appendChild(document.createTextNode("이벤트 설명"))
     firstRow.appendChild(tdElement)
     tblBody.appendChild(firstRow)
+    tdElement = document.createElement("td")
+    tdElement.appendChild(document.createTextNode("인게임 이벤트 키"))
+    firstRow.appendChild(tdElement)
+    tblBody.appendChild(firstRow)
 
     serializedList.sort((a, b) => a.Priority - b.Priority);
     // creating all cells
@@ -167,6 +172,10 @@ function renderTable(serializedList) {
         const descriptionTd = document.createElement("td")
         descriptionTd.appendChild(document.createTextNode(`${s.Description}`))
         row.appendChild(descriptionTd)
+
+        const enableKeyTd = document.createElement("td")
+        enableKeyTd.appendChild(document.createTextNode(`${s.EnableKeys}`))
+        row.appendChild(enableKeyTd)
 
         // add the row to the end of the table body
         tblBody.appendChild(row);
