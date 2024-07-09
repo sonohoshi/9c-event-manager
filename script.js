@@ -6,7 +6,7 @@ document.getElementById('fileInput').addEventListener('change', function (event)
     if (file) {
         const reader = new FileReader();
         reader.onload = function (e) {
-            const content = e.target.result.replace(/\n/g, '\\n');
+            const content = e.target.result.replace(/(?:\r\n|\r|\n)/g, '\\n');
             document.getElementById('outputText').textContent = content;
         };
         reader.readAsText(file);
