@@ -24,6 +24,7 @@ function inputToRenderTable() {
     const endDateTime = useDateTime ? document.getElementById('endDateTimeInput').value + ':00' : '';
     const url = document.getElementById('urlInput').value;
     const useAgentAddress = document.getElementById('useAgentAddress').checked;
+    const isMainnet = document.getElementById('isMainnet').checked;
     const description = document.getElementById('descriptionInput').value;
     const enableKeys = document.getElementById('enableKeyInput').value.split(",");
 
@@ -37,7 +38,8 @@ function inputToRenderTable() {
         Url: url,
         UseAgentAddress: useAgentAddress,
         Description: description,
-        EnableKeys: enableKeys
+        EnableKeys: enableKeys,
+        isMainnet: isMainnet
     };
     runtimeList.push(jsonOutput)
 
