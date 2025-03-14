@@ -39,7 +39,7 @@ function inputToRenderTable() {
         UseAgentAddress: useAgentAddress,
         Description: description,
         EnableKeys: enableKeys,
-        isMainnet: isMainnet
+        IsMainnet: isMainnet
     };
     runtimeList.push(jsonOutput)
 
