@@ -25,6 +25,7 @@ function inputToRenderTable() {
     const url = document.getElementById('urlInput').value;
     const useAgentAddress = document.getElementById('useAgentAddress').checked;
     const isMainnet = document.getElementById('isMainnet').checked;
+    const withSign = document.getElementById('withSign').checked;
     const description = document.getElementById('descriptionInput').value;
     const enableKeys = document.getElementById('enableKeyInput').value.split(",");
 
@@ -39,7 +40,8 @@ function inputToRenderTable() {
         UseAgentAddress: useAgentAddress,
         Description: description,
         EnableKeys: enableKeys,
-        IsMainnet: isMainnet
+        IsMainnet: isMainnet,
+        WithSign: withSign,
     };
     runtimeList.push(jsonOutput)
 
